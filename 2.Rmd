@@ -1,0 +1,302 @@
+---
+title: "YouTube Statistics"
+author: "WAN AMEERAH FATINI WAN RAZALI"
+date: "2024-07-04"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+### Question a
+
+## Data cleansing
+```{r}
+library(readxl)
+dataset<- read.csv("C:\\Users\\ASUS\\OneDrive - Universiti Teknologi MARA\\CS2416M1\\DSC551\\Global YouTube Statistics.csv")
+
+head(dataset, 5)
+
+# removing all non-alphanumeric characters 
+library(stringr)
+dataset$Youtuber <- str_replace_all(dataset$Youtuber, "[^[:alnum:]\\s]", "")
+dataset$Title <- str_replace_all(dataset$Title, "[^[:alnum:]\\s]", "")
+
+# dropping unnecessary columns
+library(dplyr)
+dataset <- dataset %>% select(-Gross.tertiary.education.enrollment...., -Population,-Unemployment.rate, -Urban_population, -Latitude,-Longitude)
+
+```
+
+
+
+```{r}
+library(tidyverse)
+
+#drop any rows with missing values
+dataset <- dataset %>% 
+  drop_na()
+
+# check for existing missing values in dataset
+missing_values<-colSums(is.na(dataset))
+print(missing_values)
+```
+
+## Categorical variable 1: Country
+Descriptive analysis: frequency table
+```{r}
+library(psych)
+# Define a function to map each country to its continent
+country_to_continent <- function(country) {
+  continent <- case_when(
+    country %in% c("Afghanistan", "Bangladesh", "India", "Pakistan", "Iraq", "Iran", "Saudi Arabia", "Kuwait", "Jordan", "China", "Indonesia", "Japan", "Malaysia", "Philippines", "Singapore", "Thailand", "Vietnam") ~ "Asia",
+    country %in% c("Egypt", "Morocco") ~ "Africa",
+    country %in% c("Argentina", "Brazil", "Colombia", "Peru", "Venezuela", "Ecuador") ~ "South America",
+    country %in% c("Canada", "United States", "Mexico", "El Salvador", "Cuba") ~ "North America",
+    country %in% c("United Kingdom", "France", "Germany", "Italy", "Spain", "Sweden", "Finland", "Switzerland", "Andorra", "Latvia", "Ukraine", "Netherlands", "Russia", "Turkey") ~ "Europe",
+    country %in% c("Australia") ~ "Oceania"
+  )
+  return(continent)
+}
+
+# Create a factor variable for continents
+dataset$continent <- factor(sapply(dataset$Country, country_to_continent), 
+                            levels = c("Africa", "Asia", "Europe", "North America", "Oceania", "South America"))
+
+# Create a frequency table for continents
+continent_table <- table(dataset$continent)
+
+# Print the frequency table
+print(continent_table)
+```
+
+Data visualization: stacked bar chart
+```{r}
+library(ggplot2)
+
+# Create a dataframe with total views per continent
+continent_views <- dataset %>%
+  select(Country, video.views) %>%
+  mutate(continent = sapply(Country, country_to_continent)) %>%
+  group_by(continent) %>%
+  summarise(total_views = sum(video.views)) %>%
+  arrange(desc(total_views))
+
+# Create a dataframe with top 10 countries per continent
+country_views <- dataset %>%
+  select(Country, video.views) %>%
+  mutate(continent = sapply(Country, country_to_continent)) %>%
+  group_by(continent) %>%
+  arrange(continent, desc(video.views)) %>%
+  slice(1:10) %>%
+  ungroup() %>%
+  arrange(desc(video.views))
+
+# Create the stacked bar chart
+ggplot(data = country_views, aes(x = continent, y = video.views, fill = Country)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Continent", y = "Total Views", fill = "Country", title = "Top 10 Countries by Total Video Views") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom")
+```
+
+
+## Categorical variable 2: Channel Type
+Descriptive analysis: frequency table
+```{r}
+# Convert channel_type to a factor variable
+dataset$channel_type <- factor(dataset$channel_type, levels = c("Animals", "Autos", "Comedy", "Education", "Entertainment", "Film", "Games", "Howto", "Music", "News", "Nonprofit", "People", "Sports", "Tech"))
+
+# Create a frequency table for channel_type
+channel_type_table <- table(dataset$channel_type)
+
+# Print the frequency table
+print(channel_type_table)
+```
+
+Data visualization: 3D bar chart
+```{r}
+library(highcharter)
+
+# Create a dataframe with total views per channel type
+channel <- dataset %>%
+  select(channel_type, video.views) %>%
+  group_by(channel_type) %>%
+  summarise(total_views = sum(video.views)) %>%
+  arrange(desc(total_views))
+
+# Create the 3D column chart
+highchart() %>%
+  hc_chart(type = "column", options3d = list(enabled = TRUE, alpha = 20, beta = 15)) %>%
+  hc_xAxis(categories = channel$channel_type) %>%
+  hc_add_series(data = channel$total_views, name = "Number of Views") %>%
+  hc_title(text = "Total Number of Views per Channel Type") %>%
+  hc_subtitle(text = "nan=Channel type not available")
+```
+
+
+## Numerical variable 1: subscribers
+```{r}
+describe(dataset$subscribers)
+```
+
+## Numerical variable 2: video views
+```{r}
+describe(dataset$video.views)
+```
+
+Data Visualization: Bubble chart
+```{r}
+subview<-dataset %>% 
+  select(Youtuber, subscribers, video.views, category, Country) %>% 
+  group_by(Youtuber)
+
+highchart() %>%
+  hc_chart(type = "bubble", zoomType = "xy") %>%
+  hc_title(text = "Subscribers vs. Video Views") %>%
+  hc_xAxis(
+    title = list(text = "Subscribers"),
+    labels = list(format = "{value / 1000000}M") # Divide by 1,000,000 to display in millions
+  ) %>%
+  hc_yAxis(title = list(text = "Video Views")) %>%
+  hc_add_series(
+    data = subview,
+    type = "bubble",
+    hcaes(x = subscribers, y = video.views, z = subscribers), # Use 'z' for variable bubble size based on subscribers
+    name = "Youtuber",
+    dataLabels = list(enabled = TRUE, format = '{point.Youtuber}'), # Show Youtuber names as data labels
+    colorByPoint = TRUE # Each bubble will have a different color based on the number of subscribers
+  ) %>%
+  hc_tooltip(
+    useHTML = TRUE,
+    formatter = JS(
+      "function() {",
+      "  var views = this.y;",
+      "  if (views >= 1e9) views = (views / 1e9).toFixed(1) + 'B';",
+      "  else if (views >= 1e6) views = (views / 1e6).toFixed(1) + 'M';",
+      "  else views = views.toFixed(0);",
+      "  var category = this.point.options.category;",
+      "  return '<b><u>' + this.point.options.Youtuber + '</u></b><br>'",
+      "         + 'Video Views: ' + views + ' views<br>'",
+      "         + 'Subscribers: ' + Highcharts.numberFormat(this.x / 1000000, 1) + 'M subscribers<br>'",
+      "         + 'Category: ' + category + '<br>'",
+      "         + 'Country: ' + this.point.options.Country;",
+      "}"
+    )
+  )
+```
+
+### Question b
+Inferential analysis
+```{r}
+# perform shapiro-wilk test to check for normality
+shapiro.test(dataset$subscribers)
+shapiro.test(dataset$uploads)
+
+# wilcoxon sign rank test for two dependency group
+wilcox.test(dataset$uploads, dataset$subscribers, paired = TRUE)
+
+# Spearman test
+cor.test(dataset$uploads, dataset$subscribers, method = "spearman")
+```
+**Interpretation of output**
+
+1. Shapiro-Wilk normality test:
+  - The Shapiro-Wilk test was performed on both variable `uploads` and `subscribers` to check their normality.
+   - For both variables, the p-value is less than 0.05, indicating that the data is not normally distributed.
+
+2. Wilcoxon signed-rank test:
+   - Since the data is not normally distributed, a non-parametric test is appropriate to compare the two related variables.
+   - The Wilcoxon signed-rank test was chosen to determine if there is a significant difference in the median values between `uploads` and `subscribers`.
+   - The p-value is less than 0.05, suggesting that there is a significant difference in the median values between the `uploads` and `subscribers`.
+
+3. Spearman's rank correlation:
+   - To assess the relationship between `uploads` and `subscribers`, a non-parametric correlation test is suitable since the data is not normally distributed.
+   - Spearman's rank correlation coefficient (rho) was chosen to measure the strength and direction of the monotonic relationship between `uploads` and `subscribers`.
+   - The p-value is greater than 0.05, indicating that there is no statistically significant correlation between `uploads` and `subscribers`.
+   - The correlation coefficient (rho) is 0.052, suggesting a weak positive correlation, but it is not statistically significant.
+
+In summary, the analyses performed on the `uploads` and `subscribers` variables are appropriate given the non-normal distribution of the data. The Wilcoxon signed-rank test revealed a significant difference in the median values between the two variables, while the Spearman's rank correlation showed a weak positive but non-significant correlation.
+
+These results suggest that the number of uploads and subscribers are related, but the relationship is not strong enough to be considered statistically significant. The significant difference in median values indicates that the central tendencies of the two variables differ, but the correlation analysis does not provide strong evidence of a monotonic relationship.
+
+
+### Question c
+Simulation analysis: bootstrap simulation with regression model
+```{r}
+# Set the random seed for reproducibility
+set.seed(123)
+
+# 1. Resample the data with replacement
+n_simulations <- 100
+simulated_data <- dataset %>%
+  slice_sample(n = nrow(dataset), replace = TRUE) %>%
+  expand(nesting(dataset$uploads, dataset$subscribers), sim_id = 1:n_simulations)
+
+# 2. Fit the regression model on each simulated dataset
+simulated_results <- simulated_data %>%
+  group_by(sim_id) %>%
+  summarise(
+    slope = lm(dataset$subscribers ~ dataset$uploads)$coefficients[2],
+    intercept = lm(dataset$subscribers ~ dataset$uploads)$coefficients[1],
+    r_squared = summary(lm(dataset$subscribers ~ dataset$uploads))$r.squared
+  )
+
+# 3. Summarize the simulation results
+simulated_results %>%
+  summarise(
+    mean_slope = mean(slope),
+    mean_intercept = mean(intercept),
+    mean_r_squared = mean(r_squared),
+    sd_slope = sd(slope),
+    sd_intercept = sd(intercept),
+    sd_r_squared = sd(r_squared)
+  )
+```
+**Interpretation**
+
+The analysis performed in the provided code is a bootstrap simulation for a regression model. This approach is suitable when data is non-parametric and want to assess the relationship between two variables without making assumptions about their underlying distributions.
+
+Below is the interpretation of the key steps in bootstrap simulation:
+
+1. Resampling the data with replacement: 
+The `slice_sample()` function is used to create 100 resampled datasets, each with the same number of observations as the original dataset. This resampling process is a key aspect of the bootstrap method.
+
+2. Fitting the regression model on each simulated dataset: 
+For each resampled dataset, a simple linear regression model is fitted using `lm()`, with `dataset$subscribers` as the response variable and `dataset$uploads` as the predictor variable. The slope, intercept, and R-squared values were extracted for each simulated model.
+
+3. Summarizing the simulation results: 
+The mean and standard deviation of the simulated slope, intercept, and R-squared values were calculated using `summarise()`.
+
+
+Below is the output produced from the simulation:
+
+- **mean_slope**: 35.158
+  - This represents the average slope of the regression lines across the 100 simulated datasets.
+  - It suggests that, on average, a one-unit increase in `dataset$uploads` is associated with a 35.158 increase in `dataset$subscribers`.
+
+- **mean_intercept**: 23811315
+  - This represents the average intercept of the regression lines across the 100 simulated datasets.
+  - It suggests that the expected value of `dataset$subscribers` when `dataset$uploads` is zero is approximately 23,811,315.
+
+- **mean_r_squared**: 0.006305871
+  - This represents the average R-squared value across the 100 simulated datasets.
+  - It suggests that, on average, only about 0.63% of the variance in `dataset$subscribers` is explained by `dataset$uploads`.
+
+- **sd_slope**, **sd_intercept**, **sd_r_squared**: all 0
+  - These standard deviations are all zero, indicating no variability in the simulated values.
+
+The standard deviations being zero suggests potential issues with the simulation or data. It's possible that the resampling process is not capturing the true variability in the data, or there may be other factors affecting the relationship between `dataset$uploads` and `dataset$subscribers`.
+
+The bootstrap simulation for regression provides information about the expected correlation between the number of uploads and subscribers, while controlling for the non-parametric character of the data. However, the low R-squared value means that `dataset$uploads` may not be a good predictor of `dataset$subscribers`, and additional variables should be included in the analysis.
+
+
+
+
+
+
+
+
+
+
