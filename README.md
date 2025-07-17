@@ -2,7 +2,7 @@
 
 This repository presents a structured data analysis of global YouTube channel statistics using R. The project explores trends across content categories and countries using both descriptive and inferential statistics. Key performance indicators such as subscriber count, total views, and upload volume are analyzed. The final output includes visualizations, simulation-based inference, and clear interpretations.
 
-**Report:** [View HTML Report](https://ameerahrazali.github.io/pages/[html address])  
+**Report:** [View HTML Report](https://ameerahrazali.github.io/pages/youtube_stats_analysis.html)  
 **Dataset:** [Kaggle – Global YouTube Statistics 2023](https://www.kaggle.com/datasets/nelgiriyewithana/global-youtube-statistics-2023)
 
 ---
@@ -72,12 +72,13 @@ The dataset contains information on top-ranking YouTube channels globally, sourc
 - **Programming Language:** R  
 - **Libraries:** `tidyverse`, `psych`, `highcharter`, `stringr`  
 - **Documentation:** R Markdown  
-- **Version Control:** Git and GitHub  b  
+- **Version Control:** Git and GitHub  
 
 ---
 
 ## Project Structure
 
+```yaml
 global-youtube-statistics/
 ├── data/
 │   └── Global YouTube Statistics.csv
@@ -85,7 +86,7 @@ global-youtube-statistics/
 ├── youtube_stats_analysis.html      # Rendered HTML report
 ├── .gitignore
 └── README.md                        # Project documentation
-
+```
 ---
 
 ## How to Run
