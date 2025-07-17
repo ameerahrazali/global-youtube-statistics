@@ -70,15 +70,14 @@ The dataset contains information on top-ranking YouTube channels globally, sourc
 ## Tools Used
 
 - **Programming Language:** R  
-- **Libraries:** tidyverse, psych, highcharter, stringr  
+- **Libraries:** `tidyverse`, `psych`, `highcharter`, `stringr`  
 - **Documentation:** R Markdown  
-- **Version Control:** Git and GitHub  
+- **Version Control:** Git and GitHub  b  
 
 ---
 
 ## Project Structure
 
-```yaml
 global-youtube-statistics/
 ├── data/
 │   └── Global YouTube Statistics.csv
@@ -94,3 +93,6 @@ global-youtube-statistics/
 1. Clone the repository:
    ```bash
    git clone https://github.com/ameerahrazali/global-youtube-statistics.git
+   ```
+2. Open the .Rmd file in RStudio.
+3. Run or knit the document to generate the HTML report.
