@@ -1,6 +1,6 @@
 # YouTube Statistics Analysis
 
-This repository presents a structured data analysis of global YouTube channel statistics using R. The project explores trends across content categories and countries using both descriptive and inferential statistics. Key performance indicators such as subscriber count, total views, and upload volume are analyzed. The final output includes visualizations, simulation-based inference, and clear interpretations.
+This repository presents a **structured data analysis** of global YouTube channel statistics using **R**. The project explores **trends across content categories and countries** using both **descriptive and inferential statistics**. Key performance indicators such as **subscriber count**, **total views**, and **upload volume** are analyzed. The final output includes **visualizations, simulation-based inference, and clear interpretations**.
 
 **Report:** [View HTML Report](https://ameerahrazali.github.io/pages/youtube_stats_analysis.html)  
 **Dataset:** [Kaggle – Global YouTube Statistics 2023](https://www.kaggle.com/datasets/nelgiriyewithana/global-youtube-statistics-2023)
@@ -9,17 +9,17 @@ This repository presents a structured data analysis of global YouTube channel st
 
 ## Objectives
 
-- Explore patterns in YouTube performance metrics across countries and content types  
-- Identify key factors influencing subscriber count and video views  
-- Compare performance between categories using statistical testing and bootstrap simulation  
+- **Explore patterns** in YouTube performance metrics across countries and content types  
+- **Identify key factors** influencing subscriber count and video views  
+- **Compare performance** between categories using statistical testing and bootstrap simulation  
 
 ---
 
 ## Dataset Overview
 
-The dataset contains information on top-ranking YouTube channels globally, sourced from Kaggle. It includes various performance metrics and metadata describing the channels.
+The dataset contains information on **top-ranking YouTube channels globally**, sourced from Kaggle. It includes various **performance metrics and metadata** describing the channels.
 
-### Data Dictionary
+### Data Dictionary (Used Variables)
 
 | Variable         | Description                                                   |
 |------------------|---------------------------------------------------------------|
@@ -38,20 +38,20 @@ The dataset contains information on top-ranking YouTube channels globally, sourc
 
 ## Analytical Workflow
 
-### 1. Data Preparation  
+### 1. **Data Preparation**  
 - Imported the dataset and cleaned column names  
 - Converted data types and removed duplicates or incomplete records  
 
-### 2. Descriptive Analysis  
+### 2. **Descriptive Analysis**  
 - Computed summary statistics for subscribers, views, and uploads  
 - Aggregated metrics by category and country  
 - Visualized trends using histograms, bar charts, and boxplots  
 
-### 3. Data Visualization  
+### 3. **Data Visualization**  
 - Developed an interactive bubble chart (subscribers vs video views)  
 - Used `highcharter` to compare countries and content categories  
 
-### 4. Inferential Analysis  
+### 4. **Inferential Analysis**  
 - Applied bootstrap simulation and hypothesis testing to compare:  
   - Mean subscribers between Music and Entertainment categories  
   - Confidence intervals for mean differences  
@@ -60,10 +60,10 @@ The dataset contains information on top-ranking YouTube channels globally, sourc
 
 ## Key Insights
 
-- Entertainment and Music are the leading content categories by subscriber and view counts  
-- Upload volume alone does not predict higher subscriber numbers—content type and audience targeting matter more  
-- Countries like the United States and India dominate in number of top channels, while others such as South Korea show high engagement per channel  
-- There is statistically significant evidence of subscriber count differences across content categories  
+- **Entertainment and Music** are the leading content categories by subscriber and view counts  
+- **Upload volume alone does not predict higher subscriber numbers**—content type and audience targeting matter more  
+- **Countries like the United States and India dominate** in number of top channels, while others such as **South Korea show high engagement per channel**  
+- There is **statistically significant evidence of subscriber count differences** across content categories  
 
 ---
 
@@ -97,3 +97,28 @@ global-youtube-statistics/
    ```
 2. Open the .Rmd file in RStudio.
 3. Run or knit the document to generate the HTML report.
+
+--- 
+
+## Future Improvements
+
+While the current analysis focuses on a subset of variables, the dataset contains **richer information** that can be utilized in future enhancements:
+
+- Incorporate **`channel_type`**, **`video_views_rank`**, and **`country_rank`** to analyze performance by content specialization  
+- Analyze **recent performance trends** using **`video_views_for_the_last_30_days`** and **`subscribers_for_last_30_days`**  
+- Add a **financial perspective** using:  
+  - `lowest_monthly_earnings`  
+  - `highest_monthly_earnings`  
+  - `lowest_yearly_earnings`  
+  - `highest_yearly_earnings`  
+- Explore how **channel age** (using `created_year`, `created_month`, and `created_date`) affects growth  
+- Integrate **country-level socioeconomic indicators**, such as:  
+  - `Gross tertiary education enrollment (%)`  
+  - `Population`  
+  - `Unemployment rate`  
+  - `Urban_population`  
+- Visualize **channel locations** using **`Latitude`** and **`Longitude`** for geospatial analysis  
+
+These enhancements would enable **more comprehensive insights** and support **multivariate modeling** of YouTube success factors.
+
+---
