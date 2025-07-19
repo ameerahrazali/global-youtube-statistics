@@ -61,7 +61,7 @@ The dataset contains information on **top-ranking YouTube channels globally**, s
 ## Key Insights
 
 - **Entertainment and Music** are the leading content categories by subscriber and view counts  
-- **Upload volume alone does not predict higher subscriber numbers**—content type and audience targeting matter more  
+- **Upload volume alone does not predict higher subscriber numbers**. Instead, content type and audience targeting matter more  
 - **Countries like the United States and India dominate** in number of top channels, while others such as **South Korea show high engagement per channel**  
 - There is **statistically significant evidence of subscriber count differences** across content categories  
 
