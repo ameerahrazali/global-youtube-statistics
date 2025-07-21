@@ -2,7 +2,7 @@
 
 This repository presents a **structured data analysis** of global YouTube channel statistics using **R**. The project explores **trends across content categories and countries** using both **descriptive and inferential statistics**. Key performance indicators such as **subscriber count**, **total views**, and **upload volume** are analyzed. The final output includes **visualizations, simulation-based inference, and clear interpretations**.
 
-**Report:** [View HTML Report](https://ameerahrazali.github.io/pages/youtube_stats_analysis.html)  
+**Report:** [View HTML Report](http://rpubs.com/ameerahrazali/youtube-stats-analysis)  
 **Dataset:** [Kaggle – Global YouTube Statistics 2023](https://www.kaggle.com/datasets/nelgiriyewithana/global-youtube-statistics-2023)
 
 ---
